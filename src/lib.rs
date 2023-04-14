@@ -16,7 +16,7 @@ pub mod associations {
     pub use super::api_configs::{AssociationCreationDetails, AssociationTypes};
 }
 
-pub use api_configs::types;
+pub use api_configs::{types, ApiCollection};
 pub use engagements::notes;
 pub use engagements::EngagementType;
 pub use objects::ObjectType;
