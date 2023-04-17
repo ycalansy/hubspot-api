@@ -228,7 +228,7 @@ where
                 self.client()
                     .begin(
                         Method::PATCH,
-                        &format!("/crm/v3/objects/{}/batch/update", self.path()),
+                        &format!("crm/v3/objects/{}/batch/update", self.path()),
                     )
                     .json::<BatchInputs<BatchUpdateInput<Properties>>>(&BatchInputs::new(
                         BatchUpdateInput::new_batch(ids, properties),
@@ -251,7 +251,7 @@ where
                 self.client()
                     .begin(
                         Method::POST,
-                        &format!("/crm/v4/objects/{}/batch/update", self.path()),
+                        &format!("crm/v4/objects/{}/batch/update", self.path()),
                     )
                     .json::<BatchInputs<BatchUpdateInput<Properties>>>(&BatchInputs::new(
                         inputs,
