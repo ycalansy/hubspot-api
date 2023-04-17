@@ -24,11 +24,11 @@ impl<I> BatchInputs<I> {
 /// A struct of record Ids for the update batch api.
 /// eg. Batch update.
 #[derive(Serialize, Debug)]
-struct BatchUpdateInput<Properties> {
+pub struct BatchUpdateInput<Properties> {
     /// Hubspot record Ids for a batch request.
-    id: String,
+    pub id: String,
     /// The property inputs for a batch request
-    properties: Properties,
+    pub properties: Properties,
 }
 
 impl<Properties: Clone> BatchUpdateInput<Properties> {
@@ -213,7 +213,7 @@ where
             .await
     }
 
-    // Update a batch of objects
+    // Update a batch of objects with v3 batch API
     pub async fn update<Properties, PropertiesWithHistory>(
         &self,
         ids: Vec<String>,
@@ -232,6 +232,29 @@ where
                     )
                     .json::<BatchInputs<BatchUpdateInput<Properties>>>(&BatchInputs::new(
                         BatchUpdateInput::new_batch(ids, properties),
+                    )),
+            )
+            .await
+    }
+
+    // Update a batch of objects with v4 batch API
+    pub async fn v4_update<Properties, PropertiesWithHistory>(
+        &self,
+        inputs: Vec<BatchUpdateInput<Properties>>
+    ) -> HubspotResult<BatchResult<Properties, PropertiesWithHistory, OptionNotDesired>>
+    where
+        Properties: Serialize + DeserializeOwned + Send + Sync + Clone,
+        PropertiesWithHistory: DeserializeOwned + Default,
+    {
+        self.client()
+            .send::<BatchResult<Properties, PropertiesWithHistory, OptionNotDesired>>(
+                self.client()
+                    .begin(
+                        Method::POST,
+                        &format!("/crm/v4/objects/{}/batch/update", self.path()),
+                    )
+                    .json::<BatchInputs<BatchUpdateInput<Properties>>>(&BatchInputs::new(
+                        inputs,
                     )),
             )
             .await

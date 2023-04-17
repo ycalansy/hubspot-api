@@ -17,6 +17,10 @@ pub mod associations {
     pub use super::api_configs::{AssociationCreationDetails, AssociationTypes};
 }
 
+pub mod batch {
+    pub use super::api_configs::BatchUpdateInput;
+}
+
 pub use api_configs::{types, ApiCollection};
 pub use engagements::notes;
 pub use engagements::EngagementType;

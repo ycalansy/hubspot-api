@@ -6,6 +6,7 @@ pub mod types;
 use std::sync::Arc;
 
 pub use associations::{AssociationCreationDetails, AssociationTypes};
+pub use batch::BatchUpdateInput;
 
 pub use types::{
     AssociationLinks, AssociationType, CreateAssociation, HubspotRecord, OptionNotDesired,
