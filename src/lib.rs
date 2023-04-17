@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use builder::HubspotBuilder;
 use client::HubspotClient;
+pub use client::error::{HubspotError, HubspotResult};
 use engagements::EngagementsManager;
 use objects::ObjectsManager;
 
