@@ -94,14 +94,14 @@ where
     pub status: String,
     /// The result objects of the batch request.
     pub results: Vec<HubspotRecord<Properties, PropertiesWithHistory, Associations>>,
-    #[serde(alias = "requestedAt")]
+    #[serde(rename = "requestedAt")]
     /// The time the batch request was requested.
     pub requested_at: String,
     /// The time the batch request started.
-    #[serde(alias = "startedAt")]
+    #[serde(rename = "startedAt")]
     pub started_at: String,
     /// The time the batch request was completed at.
-    #[serde(alias = "completedAt")]
+    #[serde(rename = "completedAt")]
     pub completed_at: String,
     /// Links for the batch request.
     pub links: HashMap<String, String>,
