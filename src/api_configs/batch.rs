@@ -28,7 +28,7 @@ pub struct BatchCreateInput<Properties> {
     /// The property inputs for a batch request
     pub properties: Properties,
     /// The association inputs for a batch request
-    pub associations: CreateAssociation,
+    pub associations: Vec<CreateAssociation>,
 }
 
 /// A struct of record Ids for the update batch api.
