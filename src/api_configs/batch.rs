@@ -114,7 +114,7 @@ where
     #[serde(rename = "completedAt")]
     pub completed_at: String,
     /// Links for the batch request.
-    pub links: HashMap<String, String>,
+    pub links: Option<HashMap<String, String>>,
 }
 
 // Batch Api Collection
