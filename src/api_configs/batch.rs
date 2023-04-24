@@ -106,7 +106,7 @@ where
     pub results: Vec<HubspotRecord<Properties, PropertiesWithHistory, Associations>>,
     #[serde(rename = "requestedAt")]
     /// The time the batch request was requested.
-    pub requested_at: String,
+    pub requested_at: Option<String>,
     /// The time the batch request started.
     #[serde(rename = "startedAt")]
     pub started_at: String,
@@ -162,32 +162,8 @@ where
             .await
     }
 
-    /// Creates a batch of objects with v3 batch API
-    pub async fn create<Properties>(
-        &self,
-        objects_to_create: Vec<Properties>,
-    ) -> HubspotResult<HubspotRecord<Properties, OptionNotDesired, OptionNotDesired>>
-    where
-        Properties: Serialize + DeserializeOwned + Send + Sync + Clone,
-    {
-        self.client()
-            .send::<HubspotRecord<Properties, OptionNotDesired, OptionNotDesired>>(
-                self.client()
-                    .begin(Method::POST, &format!("crm/v4/objects/{}", self.path()))
-                    .json::<BatchInputs<BatchPropertiesInput<Properties>>>(&BatchInputs::<
-                        BatchPropertiesInput<Properties>,
-                    > {
-                        inputs: objects_to_create
-                            .into_iter()
-                            .map(|properties| BatchPropertiesInput { properties })
-                            .collect(),
-                    }),
-            )
-            .await
-    }
-
-    /// Creates a batch of objects with v4 batch API
-    pub async fn v4_create<Properties, Associations>(
+    /// Creates a batch of objects
+    pub async fn create<Properties, Associations>(
         &self,
         inputs: Vec<BatchCreateInput<Properties>>
     ) -> HubspotResult<BatchResult<Properties, OptionNotDesired, Associations>>
@@ -246,32 +222,8 @@ where
             .await
     }
 
-    /// Update a batch of objects with v3 batch API
+    /// Update a batch of objects
     pub async fn update<Properties, PropertiesWithHistory>(
-        &self,
-        ids: Vec<String>,
-        properties: Properties,
-    ) -> HubspotResult<BatchResult<Properties, PropertiesWithHistory, OptionNotDesired>>
-    where
-        Properties: Serialize + DeserializeOwned + Send + Sync + Clone,
-        PropertiesWithHistory: DeserializeOwned + Default,
-    {
-        self.client()
-            .send::<BatchResult<Properties, PropertiesWithHistory, OptionNotDesired>>(
-                self.client()
-                    .begin(
-                        Method::PATCH,
-                        &format!("crm/v3/objects/{}/batch/update", self.path()),
-                    )
-                    .json::<BatchInputs<BatchUpdateInput<Properties>>>(&BatchInputs::new(
-                        BatchUpdateInput::new_batch(ids, properties),
-                    )),
-            )
-            .await
-    }
-
-    /// Update a batch of objects with v4 batch API
-    pub async fn v4_update<Properties, PropertiesWithHistory>(
         &self,
         inputs: Vec<BatchUpdateInput<Properties>>,
     ) -> HubspotResult<BatchResult<Properties, PropertiesWithHistory, OptionNotDesired>>
