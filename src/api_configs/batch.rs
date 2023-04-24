@@ -190,7 +190,7 @@ where
     pub async fn v4_create<Properties, Associations>(
         &self,
         inputs: Vec<BatchCreateInput<Properties>>
-    ) -> HubspotResult<BatchResult<Properties, PropertiesWithHistory, OptionNotDesired>>
+    ) -> HubspotResult<BatchResult<Properties, OptionNotDesired, Associations>>
     where
         Properties: Serialize + DeserializeOwned + Send + Sync + Clone,
         Associations: DeserializeOwned + Default,
