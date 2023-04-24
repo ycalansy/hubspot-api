@@ -18,7 +18,7 @@ pub mod associations {
 }
 
 pub mod batch {
-    pub use super::api_configs::BatchUpdateInput;
+    pub use super::api_configs::{BatchCreateInput, BatchUpdateInput};
 }
 
 pub use api_configs::{types, ApiCollection};

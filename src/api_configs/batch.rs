@@ -5,7 +5,7 @@ use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
 use crate::client::{error::HubspotResult, HubspotClient};
 
-use super::types::{HubspotRecord, ObjectApi, OptionNotDesired, ToPath};
+use super::types::{CreateAssociation, HubspotRecord, ObjectApi, OptionNotDesired, ToPath};
 
 /// A wrapper type for batch inputs.
 #[derive(Serialize, Debug)]
@@ -19,6 +19,16 @@ impl<I> BatchInputs<I> {
     pub fn new(inputs: Vec<I>) -> BatchInputs<I> {
         BatchInputs { inputs }
     }
+}
+
+/// A struct of record for the create batch api.
+/// eg. Batch create.
+#[derive(Serialize, Debug)]
+pub struct BatchCreateInput<Properties> {
+    /// The property inputs for a batch request
+    pub properties: Properties,
+    /// The association inputs for a batch request
+    pub associations: CreateAssociation,
 }
 
 /// A struct of record Ids for the update batch api.
@@ -152,7 +162,7 @@ where
             .await
     }
 
-    /// Creates a batch of objects
+    /// Creates a batch of objects with v3 batch API
     pub async fn create<Properties>(
         &self,
         objects_to_create: Vec<Properties>,
@@ -172,6 +182,29 @@ where
                             .map(|properties| BatchPropertiesInput { properties })
                             .collect(),
                     }),
+            )
+            .await
+    }
+
+    /// Creates a batch of objects with v4 batch API
+    pub async fn v4_create<Properties, Associations>(
+        &self,
+        inputs: Vec<BatchCreateInput<Properties>>
+    ) -> HubspotResult<BatchResult<Properties, PropertiesWithHistory, OptionNotDesired>>
+    where
+        Properties: Serialize + DeserializeOwned + Send + Sync + Clone,
+        Associations: DeserializeOwned + Default,
+    {
+        self.client()
+            .send::<BatchResult<Properties, OptionNotDesired, Associations>>(
+                self.client()
+                    .begin(
+                        Method::POST,
+                        &format!("crm/v4/objects/{}/batch/create", self.path()),
+                    )
+                    .json::<BatchInputs<BatchCreateInput<Properties>>>(&BatchInputs::new(
+                        inputs,
+                    )),
             )
             .await
     }
@@ -213,7 +246,7 @@ where
             .await
     }
 
-    // Update a batch of objects with v3 batch API
+    /// Update a batch of objects with v3 batch API
     pub async fn update<Properties, PropertiesWithHistory>(
         &self,
         ids: Vec<String>,
@@ -237,10 +270,10 @@ where
             .await
     }
 
-    // Update a batch of objects with v4 batch API
+    /// Update a batch of objects with v4 batch API
     pub async fn v4_update<Properties, PropertiesWithHistory>(
         &self,
-        inputs: Vec<BatchUpdateInput<Properties>>
+        inputs: Vec<BatchUpdateInput<Properties>>,
     ) -> HubspotResult<BatchResult<Properties, PropertiesWithHistory, OptionNotDesired>>
     where
         Properties: Serialize + DeserializeOwned + Send + Sync + Clone,
